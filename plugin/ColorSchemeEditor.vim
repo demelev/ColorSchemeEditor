@@ -49,7 +49,7 @@ endif
 if exists("g:loaded_colorschemeeditor")
     finish
 endif
-if !has('gui_running') || !has('clientserver') || v:version < 700
+if (!has('gui_running') || !has('clientserver') || v:version < 700) && !(has('nvim') && has('termguicolors'))
     finish
 endif
 
@@ -192,25 +192,27 @@ endfunction "}}}
 
 " Launch the editor
 function! <SID>ColorSchemeEditor () "{{{
-    if has('gui_running') && has('clientserver')
+    if (has('gui_running') && has('clientserver')) || (has('nvim') && has('termguicolors'))
         map <F1>          :echo synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')<CR>
-        if has('gui_win32') 
+        let is_nvim = has('nvim')
+
+        if has('gui_win32')
             "if the editor is launched with the following command, it cannot
             "print any output, or else Vim will close it down
             if exists("g:CSE_DebugMode")
                 exe 'silent !start ' . g:CSE_PythonExe . ' "' . s:CSE_Path . '" ' . v:servername .
-                            \' "' . fnamemodify( s:CSE_Path, ':h') . '"'
+                            \' "' . fnamemodify( s:CSE_Path, ':h') . '" ' . is_nvim
             else
                 exe 'silent ! start ' . g:CSE_PythonExe . ' "' . s:CSE_Path . '" '. v:servername .
-                            \' "' . fnamemodify( s:CSE_Path, ':h') . '"'
+                            \' "' . fnamemodify( s:CSE_Path, ':h') . '" ' . is_nvim
             endif
         elseif has('unix')
             if exists("g:CSE_DebugMode")
                 exe 'silent !xterm -e ' . g:CSE_PythonExe . ' "' . s:CSE_Path . '" '. v:servername .
-                            \' "' . fnamemodify( s:CSE_Path, ':h') . '" &'
+                            \' "' . fnamemodify( s:CSE_Path, ':h') . '" ' . is_nvim . ' &'
             else
                 exe 'silent !' . g:CSE_PythonExe . ' "' . s:CSE_Path . '" '. v:servername .
-                            \' "' . fnamemodify( s:CSE_Path, ':h') . '" &'
+                            \' "' . fnamemodify( s:CSE_Path, ':h') . '" ' . is_nvim . ' &'
             endif
         endif
     endif

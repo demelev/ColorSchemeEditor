@@ -63,7 +63,8 @@ class ColorSchemeEditor:
         self.colorSchemeName    = ''
         self.dirty              = False
         self.locked             = False
-        self.clientCmd          = 'vim'
+        self.is_nvim            = sys.argv[3]
+        self.clientCmd          = 'nvr' if self.is_nvim else 'vim'
 
         #regular expressions used to parse output of :highlight command
         self.re_guifg           = re.compile("guifg=(#?[\w]+)")
@@ -402,7 +403,7 @@ class ColorSchemeEditor:
                     #self.vimTreeStoreDict.set_value(name, self.colContr, score)
                     self.vimTreeStoreDict.set(name, self.colContr, score, self.colReadability, rating, self.colReadColorSet, colorize)
                 except TypeError:
-                    print "TypeError: name=%s, fg=%s, bg=%s" % (name, fg, bg) 
+                    print("TypeError: name=%s, fg=%s, bg=%s" % (name, fg, bg))
 
     def GetApparantColors(self, foreground, background):
         """resolves the visible fg/bg colors of a highlight group by returning defined colors, 
